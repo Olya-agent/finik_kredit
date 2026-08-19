@@ -1,0 +1,1032 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="finik_kredit — бесплатная таблица, которая помогает увидеть переплату, сравнить сценарии досрочного погашения и составить понятный план.">
+  <meta name="theme-color" content="#1c0d10">
+  <title>finik_kredit — ясность в кредитах</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #1c0d10;
+      --bg-deep: #12090b;
+      --panel: #471b1b;
+      --accent: #b83f33;
+      --active: #d92d32;
+      --accent-dark: #b9252b;
+      --title: #f7f5f3;
+      --text: #d1c8c5;
+      --muted: #a99d99;
+      --line: rgba(190, 60, 60, .52);
+      --soft-line: rgba(255, 255, 255, .18);
+      --glass: rgba(88, 56, 57, .53);
+      --shadow: 0 24px 80px rgba(9, 2, 4, .34);
+      --radius-xl: 30px;
+      --radius-lg: 24px;
+      --radius-md: 20px;
+      --page: 1480px;
+      --ease: cubic-bezier(.22, 1, .36, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 94% 44%, rgba(185, 37, 43, .27), transparent 34%),
+        radial-gradient(circle at 0% 76%, rgba(105, 30, 32, .16), transparent 28%),
+        linear-gradient(135deg, var(--bg-deep), var(--bg) 48%, #230d11);
+      color: var(--text);
+      font-family: "Manrope", "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; }
+    img { max-width: 100%; display: block; }
+    svg { display: block; }
+
+    :focus-visible {
+      outline: 3px solid rgba(247, 245, 243, .92);
+      outline-offset: 4px;
+    }
+
+    .site-shell {
+      width: min(calc(100% - 64px), var(--page));
+      margin-inline: auto;
+      padding: 24px 0 30px;
+    }
+
+    .capsule {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: linear-gradient(100deg, rgba(18, 9, 11, .92), rgba(61, 20, 24, .76));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+    }
+
+    .header {
+      position: relative;
+      z-index: 20;
+      min-height: 84px;
+      padding: 12px 18px 12px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
+
+    .logo {
+      flex: 0 0 auto;
+      color: var(--title);
+      font-weight: 400;
+      font-size: 24px;
+      letter-spacing: -.025em;
+      text-decoration: none;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: clamp(22px, 4vw, 60px);
+      margin-left: auto;
+    }
+
+    .nav-link {
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color .25s ease;
+    }
+
+    .nav-link:hover { color: var(--title); }
+
+    .button {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 58px;
+      padding: 0 30px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 999px;
+      background: linear-gradient(125deg, var(--accent), var(--active) 58%, var(--accent-dark));
+      box-shadow: 0 14px 32px rgba(217,45,50,.20), inset 0 1px 0 rgba(255,255,255,.2);
+      color: white;
+      font-weight: 700;
+      text-decoration: none;
+      text-align: center;
+      transition: filter .25s ease, box-shadow .25s ease, transform .25s ease;
+    }
+
+    .button::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(100deg, transparent, rgba(255,255,255,.15), transparent);
+      transform: translateX(-110%);
+      transition: transform .65s ease;
+    }
+
+    .button:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 16px 42px rgba(217,45,50,.31), inset 0 1px 0 rgba(255,255,255,.26);
+    }
+
+    .button:hover::before { transform: translateX(110%); }
+    .button:active { transform: translateY(1px); }
+    .button--header { min-width: 190px; }
+
+    .hero {
+      position: relative;
+      isolation: isolate;
+      min-height: min(730px, calc(100svh - 128px));
+      margin-top: 16px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: #241114 url("hero-interior.webp") center / cover no-repeat;
+      box-shadow: var(--shadow);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(18, 7, 10, .93) 0%, rgba(25, 8, 11, .80) 37%, rgba(32, 7, 10, .33) 68%, rgba(25, 6, 9, .12)),
+        linear-gradient(0deg, rgba(19, 7, 9, .87) 0%, transparent 38%),
+        linear-gradient(120deg, rgba(149, 28, 31, .10), rgba(217,45,50,.18));
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      box-shadow: inset 0 0 90px rgba(17, 5, 7, .55);
+    }
+
+    .hero-main {
+      min-height: 595px;
+      padding: clamp(46px, 5vw, 78px) clamp(34px, 5vw, 68px) 138px;
+      display: grid;
+      grid-template-columns: minmax(0, .98fr) minmax(470px, 1.02fr);
+      align-items: center;
+      gap: 34px;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 720px);
+      max-width: 720px;
+    }
+
+    .eyebrow {
+      margin: 0 0 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #e5a7a2;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 30px;
+      height: 1px;
+      background: currentColor;
+    }
+
+    h1, h2, h3, p { text-wrap: balance; }
+
+    h1 {
+      max-width: 720px;
+      margin: 0;
+      color: var(--title);
+      font-size: clamp(48px, 4vw, 60px);
+      line-height: 1.07;
+      letter-spacing: -.045em;
+      font-weight: 700;
+    }
+
+    .hero-title-line {
+      display: block;
+      white-space: nowrap;
+    }
+
+    .hero-subtitle {
+      max-width: 585px;
+      margin: 28px 0 0;
+      color: var(--text);
+      font-size: clamp(19px, 1.6vw, 25px);
+      line-height: 1.42;
+      letter-spacing: -.025em;
+    }
+
+    .hero-actions {
+      width: max-content;
+      max-width: 100%;
+      margin-top: 34px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .hero-actions .button {
+      min-width: 316px;
+      min-height: 68px;
+      font-size: 17px;
+    }
+
+    .hero-actions .text-link { align-self: center; }
+
+    .text-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--title);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .text-link svg { width: 18px; transition: transform .2s ease; }
+    .text-link:hover svg { transform: translateX(4px); }
+
+    .smart-area {
+      position: relative;
+      min-height: 430px;
+    }
+
+    .smart-card {
+      position: absolute;
+      width: min(340px, 72%);
+      min-height: 112px;
+      padding: 20px 28px 20px 22px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 23px;
+      background: linear-gradient(135deg, rgba(115, 74, 73, .62), rgba(64, 37, 39, .5));
+      backdrop-filter: blur(17px);
+      -webkit-backdrop-filter: blur(17px);
+      box-shadow: 0 18px 45px rgba(7, 2, 3, .30), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .smart-card:nth-child(1) { top: 0; right: 18%; }
+    .smart-card:nth-child(2) { top: 148px; right: 7%; }
+    .smart-card:nth-child(3) { top: 296px; right: -1%; }
+
+    .smart-card::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      width: clamp(24px, 4.5vw, 72px);
+      height: 1px;
+      background: rgba(245,226,223,.7);
+    }
+
+    .smart-card::before {
+      content: "";
+      position: absolute;
+      z-index: 2;
+      top: calc(50% - 6px);
+      left: calc(100% + clamp(24px, 4.5vw, 72px) - 5px);
+      width: 11px;
+      height: 11px;
+      border: 2px solid rgba(255,255,255,.54);
+      border-radius: 50%;
+      background: #f7eeeb;
+      box-shadow: 0 0 14px rgba(255,255,255,.65);
+    }
+
+    .smart-card:nth-child(3)::after { width: 40px; }
+    .smart-card:nth-child(3)::before { left: calc(100% + 40px - 7.5px); }
+
+    .icon-orb {
+      flex: 0 0 auto;
+      width: 54px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 50%;
+      background: rgba(255,255,255,.10);
+      color: var(--title);
+    }
+
+    .icon-orb svg { width: 27px; height: 27px; stroke-width: 1.75; }
+    .smart-label { display: block; margin-bottom: 3px; color: #d6bfbc; font-size: 12px; }
+    .smart-card strong { display: block; color: var(--title); font-size: 16px; line-height: 1.35; }
+
+    .hero-strip {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 14px;
+      min-height: 94px;
+      padding: 16px 28px;
+      display: grid;
+      grid-template-columns: repeat(3, max-content);
+      justify-content: start;
+      align-items: center;
+      gap: 24px clamp(44px, 4.5vw, 72px);
+      background: transparent;
+    }
+
+    .mini-benefit {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--title);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .mini-benefit + .mini-benefit { padding-left: 0; }
+    .mini-benefit svg { flex: 0 0 auto; width: 31px; height: 31px; stroke-width: 1.5; }
+
+    .section { scroll-margin-top: 18px; }
+    .section-title {
+      min-height: 68px;
+      margin: 16px 0 12px;
+      padding: 0 30px;
+      display: flex;
+      align-items: center;
+      color: var(--title);
+      font-size: clamp(18px, 1.6vw, 23px);
+      font-weight: 600;
+      letter-spacing: -.025em;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: minmax(310px, .76fr) minmax(0, 1.24fr);
+      gap: 14px;
+    }
+
+    .feature-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(245,226,223,.40);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(103,70,69,.63), rgba(87,45,48,.72));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    .feature-large {
+      min-height: 610px;
+      padding: 40px 38px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #251113 url("hero-interior.webp") 65% center / cover no-repeat;
+    }
+
+    .feature-large::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(22,8,10,.56), rgba(24,8,10,.90)), rgba(91, 18, 21, .18);
+    }
+
+    .feature-large > * { position: relative; z-index: 1; }
+    .feature-large h3 { max-width: 420px; margin: 0; color: var(--title); font-size: clamp(22px, 1.75vw, 27px); font-weight: 600; line-height: 1.3; letter-spacing: -.025em; }
+    .feature-large p { max-width: 410px; margin: 24px 0 0; font-size: 16px; font-weight: 400; line-height: 1.62; }
+
+    .bonus {
+      width: min(100%, 390px);
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      gap: 17px;
+      border: 1px solid rgba(255,255,255,.24);
+      border-radius: 19px;
+      background: rgba(83,60,60,.48);
+      backdrop-filter: blur(16px);
+      color: var(--title);
+    }
+
+    .bonus .icon-orb { width: 52px; height: 52px; }
+    .bonus small { display: block; margin-bottom: 2px; color: #e0c4c1; font-size: 13px; line-height: 1.4; }
+    .bonus strong { display: block; font-size: 15px; font-weight: 600; line-height: 1.4; }
+
+    .feature-small-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .feature-small, .flip-face {
+      min-height: 298px;
+      padding: 28px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .feature-small .icon-orb, .flip-face .icon-orb {
+      width: 52px;
+      height: 52px;
+      border-color: rgba(255,255,255,.16);
+      background: linear-gradient(135deg, rgba(217,45,50,.64), rgba(184,63,51,.58));
+    }
+
+    .feature-small h3, .flip-face h3 {
+      margin: 24px 0 12px;
+      color: var(--title);
+      font-size: clamp(19px, 1.35vw, 22px);
+      font-weight: 600;
+      line-height: 1.32;
+      letter-spacing: -.025em;
+    }
+
+    .feature-small p, .flip-face p { margin: auto 0 0; font-size: 15px; font-weight: 400; line-height: 1.6; }
+
+    .fixed-title-line {
+      display: block;
+      white-space: nowrap;
+    }
+
+    .flip-card {
+      min-height: 298px;
+      border-radius: var(--radius-lg);
+      perspective: 1100px;
+      cursor: pointer;
+    }
+
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 298px;
+      transform-style: preserve-3d;
+      transition: transform .62s var(--ease);
+    }
+
+    .flip-card:hover .flip-inner,
+    .flip-card.is-flipped .flip-inner { transform: rotateY(180deg); }
+
+    .flip-face {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border: 1px solid rgba(245,226,223,.40);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(103,70,69,.82), rgba(87,45,48,.92));
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .flip-back {
+      justify-content: center;
+      transform: rotateY(180deg);
+      background: linear-gradient(145deg, rgba(86,32,35,.97), rgba(132,49,48,.94));
+    }
+
+    .flip-back h3 { margin: 0 0 20px; }
+    .scenario {
+      width: 100%;
+      padding: 16px 0;
+      color: var(--title);
+      font-size: 17px;
+      line-height: 1.45;
+    }
+    .scenario + .scenario { border-top: 1px solid rgba(255,255,255,.18); }
+    .flip-hint { margin-top: auto; color: #dfb2ad; font-size: 12px; }
+
+    .steps-wrap {
+      padding: 14px;
+      border: 1px solid rgba(190, 60, 60, .34);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(120deg, rgba(35,14,17,.80), rgba(72,23,26,.52));
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .step {
+      position: relative;
+      min-height: 260px;
+      padding: 23px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border: 1px solid rgba(190,60,60,.23);
+      border-radius: var(--radius-md);
+      background: linear-gradient(150deg, rgba(69,33,35,.60), rgba(47,23,26,.72));
+    }
+
+    .step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      z-index: 3;
+      top: 50%;
+      left: calc(100% + 1px);
+      width: 22px;
+      transform: translate(-50%, -50%);
+      color: #f1e3e0;
+      font-size: 25px;
+      text-align: center;
+    }
+
+    .step-top {
+      position: relative;
+      width: 100%;
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-number {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--active), var(--accent));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.22);
+      color: white;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .step svg { width: 48px; height: 48px; color: var(--title); stroke-width: 1.5; }
+    .step h3 { width: 100%; margin: 18px 0 10px; color: var(--title); font-size: 16px; line-height: 1.35; text-align: center; }
+    .step p { width: 100%; margin: auto 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; text-align: center; }
+
+    .product-traits {
+      margin-top: 12px;
+      min-height: 72px;
+      padding: 14px 28px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: center;
+      gap: 20px;
+      border: 1px solid rgba(190,60,60,.35);
+      border-radius: 21px;
+      background: linear-gradient(90deg, rgba(41,17,20,.84), rgba(86,28,30,.62));
+    }
+
+    .trait {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 13px;
+      color: var(--text);
+      font-size: 14px;
+    }
+    .trait + .trait { border-left: 1px solid rgba(255,255,255,.1); }
+    .trait svg { width: 23px; color: #e66d65; stroke-width: 1.7; }
+
+    .final-cta {
+      position: relative;
+      isolation: isolate;
+      min-height: 0;
+      margin-top: 16px;
+      padding: clamp(26px, 3vw, 34px) 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(125deg, rgba(45,17,20,.96), rgba(87,25,28,.84));
+      text-align: center;
+    }
+
+    .final-cta::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 620px;
+      height: 620px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(217,45,50,.30), transparent 66%);
+      filter: blur(12px);
+    }
+
+    .final-cta h2 {
+      max-width: 760px;
+      margin: 0;
+      color: var(--title);
+      font-size: clamp(30px, 3vw, 42px);
+      line-height: 1.08;
+      letter-spacing: -.055em;
+    }
+
+    .final-cta p { max-width: 670px; margin: 12px 0 18px; font-size: clamp(16px, 1.35vw, 19px); }
+    .final-cta .button { min-width: 310px; min-height: 66px; }
+
+    .footer {
+      min-height: 0;
+      margin-top: 16px;
+      padding: 20px 30px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 24px;
+      border: 1px solid rgba(190,60,60,.28);
+      border-radius: var(--radius-lg);
+      background: rgba(18,8,10,.72);
+    }
+
+    .footer-logo { color: var(--title); font-size: 19px; font-weight: 400; letter-spacing: -.025em; }
+    .footer-links { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px 22px; }
+    .footer-links a { color: var(--muted); font-size: 12px; line-height: 1.35; text-decoration: none; transition: color .2s ease; }
+    .footer-links a:hover { color: var(--title); }
+    .copyright { justify-self: end; color: var(--muted); font-size: 13px; }
+
+    .toast {
+      position: fixed;
+      z-index: 100;
+      left: 50%;
+      bottom: 24px;
+      max-width: calc(100% - 32px);
+      padding: 13px 18px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 999px;
+      background: rgba(40,19,22,.94);
+      box-shadow: 0 16px 44px rgba(0,0,0,.34);
+      color: var(--title);
+      font-size: 14px;
+      opacity: 0;
+      transform: translate(-50%, 18px);
+      pointer-events: none;
+      transition: opacity .28s ease, transform .28s var(--ease);
+      backdrop-filter: blur(12px);
+    }
+
+    .toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .72s var(--ease), transform .72s var(--ease);
+    }
+    .reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 1180px) {
+      .site-shell { width: min(calc(100% - 40px), var(--page)); }
+      .hero { min-height: 780px; }
+      .hero-main { grid-template-columns: minmax(0, 1fr) minmax(400px, .8fr); padding-inline: 42px; }
+      h1 { font-size: clamp(46px, 4.45vw, 54px); }
+      .smart-card { width: min(320px, 78%); }
+      .smart-card:nth-child(1) { right: 7%; }
+      .smart-card:nth-child(2) { right: 0; }
+      .smart-card:nth-child(3) { right: -4%; }
+      .smart-card:nth-child(3)::after { width: 8px; }
+      .smart-card:nth-child(3)::before { left: calc(100% + 8px - 7.5px); }
+      .steps { grid-template-columns: repeat(3, 1fr); }
+      .step { min-height: 235px; }
+      .step:nth-child(3)::after { display: none; }
+      .step:nth-child(n+4) { margin-top: 2px; }
+    }
+
+    @media (max-width: 900px) {
+      .site-shell { width: min(calc(100% - 28px), var(--page)); padding-top: 14px; }
+      .header { min-height: 74px; padding: 10px 12px 10px 22px; }
+      .logo { font-size: 21px; }
+      .nav-link { display: none; }
+      .button--header { min-width: 160px; min-height: 52px; padding-inline: 22px; font-size: 14px; }
+      .hero { min-height: 1060px; background-position: 58% center; }
+      .hero-main { min-height: auto; padding: 62px 36px 170px; grid-template-columns: 1fr; align-content: start; }
+      .hero-copy { max-width: 720px; }
+      h1 { font-size: clamp(42px, 7vw, 54px); }
+      .smart-area { min-height: 390px; margin-top: 18px; }
+      .smart-card { width: min(390px, 74%); }
+      .smart-card:nth-child(1) { top: 0; left: 0; right: auto; }
+      .smart-card:nth-child(2) { top: 130px; left: 12%; right: auto; }
+      .smart-card:nth-child(3) { top: 260px; left: 24%; right: auto; }
+      .smart-card::after, .smart-card::before { display: none; }
+      .hero-strip { min-height: 132px; padding-inline: 28px; }
+      .mini-benefit + .mini-benefit { padding-left: 0; }
+      .benefits-grid { grid-template-columns: 1fr; }
+      .feature-large { min-height: 520px; }
+      .feature-small, .flip-card, .flip-inner { min-height: 280px; }
+      .product-traits { grid-template-columns: 1fr; padding: 20px 24px; }
+      .trait { justify-content: flex-start; }
+      .trait + .trait { border-left: 0; border-top: 1px solid rgba(255,255,255,.1); padding-top: 14px; }
+      .footer { grid-template-columns: 1fr; text-align: center; }
+      .copyright { justify-self: center; }
+    }
+
+    @media (max-width: 640px) {
+      body { font-size: 15px; }
+      .site-shell { width: min(calc(100% - 20px), var(--page)); padding-top: 10px; }
+      .header { min-height: 66px; padding: 8px 8px 8px 18px; gap: 10px; }
+      .logo { font-size: 19px; }
+      .button--header { min-width: 0; min-height: 46px; padding-inline: 17px; font-size: 12px; }
+      .hero { min-height: 1160px; margin-top: 10px; border-radius: 25px; background-position: 61% center; }
+      .hero-main { padding: 46px 22px 240px; gap: 18px; }
+      .eyebrow { margin-bottom: 14px; font-size: 11px; }
+      h1 { font-size: clamp(32px, 8.7vw, 42px); line-height: 1.06; }
+      .hero-subtitle { margin-top: 22px; font-size: 17px; line-height: 1.48; }
+      .hero-actions { width: 100%; margin-top: 28px; gap: 16px; }
+      .hero-actions .button { width: 100%; min-width: 0; min-height: 62px; font-size: 15px; }
+      .text-link { font-size: 14px; }
+      .smart-area { min-height: 395px; margin-top: 26px; }
+      .smart-card { position: relative; inset: auto !important; width: 100%; min-height: 102px; margin-bottom: 10px; padding: 16px 18px; border-radius: 20px; }
+      .smart-card .icon-orb { width: 46px; height: 46px; }
+      .smart-card .icon-orb svg { width: 23px; height: 23px; }
+      .smart-card strong { font-size: 15px; }
+      .hero-strip { bottom: 12px; min-height: 203px; padding: 12px 22px; grid-template-columns: 1fr; gap: 0; }
+      .mini-benefit { min-height: 58px; }
+      .mini-benefit + .mini-benefit { padding-left: 0; }
+      .mini-benefit svg { width: 27px; height: 27px; }
+      .section-title { min-height: 60px; margin-top: 10px; padding-inline: 22px; font-size: 18px; }
+      .feature-large { min-height: 540px; padding: 30px 24px; border-radius: 22px; }
+      .feature-large h3 { font-size: 23px; }
+      .feature-large p { font-size: 15px; }
+      .feature-small-grid { grid-template-columns: 1fr; gap: 10px; }
+      .feature-small, .flip-card, .flip-inner { min-height: 265px; }
+      .feature-small, .flip-face { padding: 25px 24px; }
+      .feature-small h3, .flip-face h3 { font-size: 19px; }
+      .steps-wrap { padding: 9px; border-radius: 24px; }
+      .steps { grid-template-columns: 1fr; gap: 10px; }
+      .step { min-height: 210px; margin: 0 !important; padding: 22px; }
+      .step:not(:last-child)::after {
+        content: "↓";
+        top: calc(100% + 1px);
+        left: 50%;
+        width: 30px;
+      }
+      .step:nth-child(3)::after { display: block; }
+      .step h3 { font-size: 18px; }
+      .step p { font-size: 14px; }
+      .product-traits { border-radius: 20px; }
+      .final-cta { min-height: 0; padding: 32px 22px; border-radius: 25px; }
+      .final-cta h2 { font-size: 34px; }
+      .final-cta p { font-size: 16px; }
+      .final-cta .button { width: 100%; min-width: 0; }
+      .footer { padding: 22px 20px; }
+      .footer-links { flex-direction: row; gap: 10px 18px; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title-line { white-space: normal; }
+    }
+
+    @media (max-width: 360px) {
+      .fixed-title-line { white-space: normal; }
+    }
+
+    @media (hover: none) {
+      .flip-card:hover .flip-inner { transform: none; }
+      .flip-card.is-flipped .flip-inner { transform: rotateY(180deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="site-shell">
+    <header class="header capsule" aria-label="Главная навигация">
+      <a class="logo" href="#top" aria-label="finik_kredit — наверх">finik_kredit</a>
+      <nav class="nav" aria-label="Разделы страницы">
+        <a class="nav-link" href="#benefits">Возможности</a>
+        <a class="button button--header" href="#" data-placeholder="telegram">Забрать таблицу</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-main">
+          <div class="hero-copy">
+            <h1 id="hero-title"><span class="hero-title-line">Ясность в кредитах —</span><span class="hero-title-line">свобода в жизни</span></h1>
+            <p class="hero-subtitle">Понятный сценарий погашения именно твоего кредита, который покажет переплату, сэкономит деньги и вернёт контроль за 10 минут.</p>
+            <div class="hero-actions">
+              <a class="button" href="#benefits">Посмотреть возможности</a>
+              <a class="text-link" href="#how-it-works">Как это работает <i data-lucide="arrow-right" aria-hidden="true"></i></a>
+            </div>
+          </div>
+
+          <div class="smart-area" aria-label="Основные возможности таблицы">
+            <article class="smart-card">
+              <span class="icon-orb"><i data-lucide="file-chart-column" aria-hidden="true"></i></span>
+              <div><span class="smart-label">расчёт</span><strong>Переплата<br>под контролем</strong></div>
+            </article>
+            <article class="smart-card">
+              <span class="icon-orb"><i data-lucide="calendar-days" aria-hidden="true"></i></span>
+              <div><span class="smart-label">план</span><strong>Сценарии досрочного<br>погашения</strong></div>
+            </article>
+            <article class="smart-card">
+              <span class="icon-orb"><i data-lucide="target" aria-hidden="true"></i></span>
+              <div><span class="smart-label">цель</span><strong>Движение к свободе<br>без лишних тревог</strong></div>
+            </article>
+          </div>
+        </div>
+
+        <div class="hero-strip">
+          <div class="mini-benefit"><i data-lucide="shield-check" aria-hidden="true"></i><span>Надёжно<br>и безопасно</span></div>
+          <div class="mini-benefit"><i data-lucide="clock-3" aria-hidden="true"></i><span>Экономия времени<br>и денег</span></div>
+          <div class="mini-benefit"><i data-lucide="chart-no-axes-combined" aria-hidden="true"></i><span>Решения<br>на основе цифр</span></div>
+        </div>
+      </section>
+
+      <section class="section" id="benefits" aria-labelledby="benefits-title">
+        <h2 class="section-title capsule" id="benefits-title">Зачем это вам</h2>
+        <div class="benefits-grid">
+          <article class="feature-card feature-large reveal">
+            <div>
+              <h3>С кредитной таблицей вы видите полную картину по кредитам</h3>
+              <p>Вся информация в одном месте: платежи, проценты, переплата, сроки и досрочные погашения.<br><br>Таблица быстро считает всё за вас, и тумана больше нет — есть чёткий план действий.</p>
+            </div>
+            <div class="bonus">
+              <span class="icon-orb"><i data-lucide="gift" aria-hidden="true"></i></span>
+              <div><small>Бонус внутри</small><strong>Инструкция и чек-лист<br>в подарок</strong></div>
+            </div>
+          </article>
+
+          <div class="feature-small-grid">
+            <article class="feature-card feature-small reveal">
+              <span class="icon-orb"><i data-lucide="eye" aria-hidden="true"></i></span>
+              <h3><span class="fixed-title-line">Видите наглядно переплату</span><span class="fixed-title-line">и управляете ею.</span></h3>
+              <p>Таблица показывает, какова переплата по вашему сценарию сразу.</p>
+            </article>
+
+            <div class="flip-card reveal" role="button" tabindex="0" aria-pressed="false" aria-label="Сравниваете сценарии. Нажмите, чтобы перевернуть карточку">
+              <div class="flip-inner">
+                <article class="flip-face flip-front">
+                  <span class="icon-orb"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span>
+                  <h3>Сравниваете сценарии</h3>
+                  <p>Одна сумма досрочки и два разных эффекта на кредит.</p>
+                  <span class="flip-hint">Наведите или нажмите, чтобы сравнить</span>
+                </article>
+                <article class="flip-face flip-back">
+                  <h3>Выбираете то, что важно вам</h3>
+                  <div class="scenario">Хочу легче дышать →<br><strong>уменьшаю платёж</strong></div>
+                  <div class="scenario">Хочу быстрее освободиться →<br><strong>уменьшаю срок</strong></div>
+                </article>
+              </div>
+            </div>
+
+            <article class="feature-card feature-small reveal">
+              <span class="icon-orb"><i data-lucide="calendar-check-2" aria-hidden="true"></i></span>
+              <h3>Не гасите вслепую, а планируйте зная</h3>
+              <p>Понятный план платежей помогает жить без стресса и неопределённости.</p>
+            </article>
+
+            <article class="feature-card feature-small reveal">
+              <span class="icon-orb"><i data-lucide="russian-ruble" aria-hidden="true"></i></span>
+              <h3><span class="fixed-title-line">Экономите деньги</span><span class="fixed-title-line">и время.</span></h3>
+              <p>Меньше переплат — больше свободы. И никаких сложных расчётов вручную.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="how-it-works" aria-labelledby="steps-title">
+        <h2 class="section-title capsule" id="steps-title">Как это работает</h2>
+        <div class="steps-wrap reveal">
+          <div class="steps">
+            <article class="step">
+              <div class="step-top"><span class="step-number">1</span><i data-lucide="file-text" aria-hidden="true"></i></div>
+              <h3>Вносите данные</h3>
+              <p>Заполните сумму, срок, ставку и текущий платёж в таблице.</p>
+            </article>
+            <article class="step">
+              <div class="step-top"><span class="step-number">2</span><i data-lucide="pie-chart" aria-hidden="true"></i></div>
+              <h3>Таблица всё<br>посчитает</h3>
+              <p>Автоматический расчёт покажет график платежей и переплату.</p>
+            </article>
+            <article class="step">
+              <div class="step-top"><span class="step-number">3</span><i data-lucide="route" aria-hidden="true"></i></div>
+              <h3>Выбираете<br>сценарий</h3>
+              <p>Сравните уменьшение срока и платежа — и увидите разницу.</p>
+            </article>
+            <article class="step">
+              <div class="step-top"><span class="step-number">4</span><i data-lucide="target" aria-hidden="true"></i></div>
+              <h3>Принимаете<br>решение</h3>
+              <p>Выберите стратегию, которая поможет вам сэкономить.</p>
+            </article>
+            <article class="step">
+              <div class="step-top"><span class="step-number">5</span><i data-lucide="calendar-days" aria-hidden="true"></i></div>
+              <h3>Действуете<br>по плану</h3>
+              <p>Следуйте графику и вносите досрочные платежи.</p>
+            </article>
+            <article class="step">
+              <div class="step-top"><span class="step-number">6</span><i data-lucide="circle-check-big" aria-hidden="true"></i></div>
+              <h3>Достигаете цели</h3>
+              <p>Гасите кредит быстрее, платите меньше и живите свободнее.</p>
+            </article>
+          </div>
+
+          <div class="product-traits">
+            <div class="trait"><i data-lucide="credit-card" aria-hidden="true"></i><span>Подходит для любых кредитов</span></div>
+            <div class="trait"><i data-lucide="sheet" aria-hidden="true"></i><span>Работает в Excel и Google Таблицах</span></div>
+            <div class="trait"><i data-lucide="lock-keyhole" aria-hidden="true"></i><span>Ваши данные остаются у вас</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="final-cta reveal" aria-labelledby="final-title">
+        <h2 id="final-title">Посмотрите свой кредит без догадок</h2>
+        <p>Заберите бесплатную таблицу в Telegram и посмотрите свои цифры.</p>
+        <a class="button" href="#" data-placeholder="telegram">Забрать бесплатную таблицу</a>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-logo">finik_kredit</div>
+      <nav class="footer-links" aria-label="Ссылки в подвале">
+        <a href="#" data-placeholder="telegram">Telegram</a>
+        <a href="#" data-placeholder="privacy">Политика обработки персональных данных</a>
+        <a href="#" data-placeholder="consent">Согласие на обработку персональных данных</a>
+        <a href="#" data-placeholder="terms">Условия использования</a>
+      </nav>
+      <div class="copyright">© 2026 finik_kredit</div>
+    </footer>
+  </div>
+
+  <div class="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script>
+    if (window.lucide) lucide.createIcons();
+
+    const flipCard = document.querySelector('.flip-card');
+    const setFlip = () => {
+      const nextState = !flipCard.classList.contains('is-flipped');
+      flipCard.classList.toggle('is-flipped', nextState);
+      flipCard.setAttribute('aria-pressed', String(nextState));
+    };
+
+    flipCard.addEventListener('click', setFlip);
+    flipCard.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        setFlip();
+      }
+    });
+
+    const toast = document.querySelector('.toast');
+    let toastTimer;
+    const placeholderMessages = {
+      telegram: 'Ссылка на Telegram будет добавлена позже',
+      privacy: 'Ссылка на политику обработки персональных данных будет добавлена позже',
+      consent: 'Ссылка на согласие на обработку персональных данных будет добавлена позже',
+      terms: 'Ссылка на условия использования будет добавлена позже'
+    };
+
+    document.querySelectorAll('[data-placeholder]').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        toast.textContent = placeholderMessages[link.dataset.placeholder];
+        toast.classList.add('is-visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2600);
+      });
+    });
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const revealItems = document.querySelectorAll('.reveal');
+    if (reducedMotion || !('IntersectionObserver' in window)) {
+      revealItems.forEach((item) => item.classList.add('is-visible'));
+    } else {
+      const observer = new IntersectionObserver((entries, revealObserver) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
+        });
+      }, { threshold: .12, rootMargin: '0px 0px -6% 0px' });
+      revealItems.forEach((item) => observer.observe(item));
+    }
+  </script>
+</body>
+</html>
